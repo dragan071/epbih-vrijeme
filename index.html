@@ -2,26 +2,30 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sat elektroprivrede</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ELEKTROPRIVREDA BROJILO</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    
+    font-family: "Segoe UI", "San Francisco", "Helvetica Neue", "Ubuntu", "Arial", sans-serif;
+    padding: 10px;
+    margin: 0;
   }
   h1 {
     text-align: center;
-    font-size: 50px;
+    font-size: 10vw;
+    margin: 10px 0;
+    margin-bottom: 40px;
   }
   .time-box {
-    font-size: 40px;
+    font-size: 8vw;
     font-weight: bold;
-    margin: 10px auto;
-    padding: 10px;
-    width: 600px;
+    margin: 15px auto;
+    padding: 20px;
+    max-width: 95%;
     text-align: center;
-    border-radius: 8px;
-    border: 1px solid #ccc;
+    border-radius: 12px;
+    border: 2px solid #ccc;
+    line-height: 1.4;
   }
   .green {
     background-color: lightgreen;
@@ -29,13 +33,25 @@
   .red {
     background-color: lightcoral;
   }
+
+  /* Za desktop ekrane */
+  @media (min-width: 768px) {
+    h1 {
+      font-size: 50px;
+    }
+    .time-box {
+      font-size: 40px;
+      max-width: 600px;
+    }
+  }
 </style>
 </head>
 <body>
-    <h1>Sat za elektroprivredu</h1>
+    <h1>Elektroprivreda - brojilo</h1>
 
 <div id="currentTime" class="time-box"></div>
 <div id="futureTime" class="time-box"></div>
+<div id="historicalDate" class="time-box"></div>
 
 <script>
 function pad(n) {
@@ -52,7 +68,7 @@ function updateTimes() {
 
   // Display current time (no formatting)
   const currentDiv = document.getElementById('currentTime');
-  currentDiv.textContent = 'Trenutno vrijeme: ' + currentTimeStr;
+  currentDiv.innerHTML = 'Trenutno vrijeme:<br>' + currentTimeStr;
   currentDiv.className = 'time-box';
 
   // Current time + 1h 17m
@@ -72,8 +88,27 @@ function updateTimes() {
   const futureColor = getColor(futureHours);
 
   const futureDiv = document.getElementById('futureTime');
-  futureDiv.textContent = 'Vrijeme na satu: (1h17m): ' + futureTimeStr;
+  futureDiv.innerHTML = 'Vrijeme na satu: (1h17m):<br>' + futureTimeStr;
   futureDiv.className = 'time-box ' + futureColor;
+
+  // Historical date (10 years and 1 day ago)
+  const historicalDate = new Date(now);
+  historicalDate.setFullYear(historicalDate.getFullYear() - 10);
+  historicalDate.setDate(historicalDate.getDate() - 1);
+
+  const dayNames = ['Nedjelja', 'Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota'];
+  const monthNames = ['siječnja', 'veljače', 'ožujka', 'travnja', 'svibnja', 'lipnja',
+                      'srpnja', 'kolovoza', 'rujna', 'listopada', 'studenog', 'prosinca'];
+
+  const dayOfWeek = dayNames[historicalDate.getDay()];
+  const day = historicalDate.getDate();
+  const month = monthNames[historicalDate.getMonth()];
+  const year = historicalDate.getFullYear();
+
+  const historicalDiv = document.getElementById('historicalDate');
+  historicalDiv.innerHTML = 'Dan:<br>' +
+                            dayOfWeek;
+  historicalDiv.className = 'time-box';
 }
 
 // Update immediately and every minute
