@@ -71,8 +71,13 @@ function updateTimes() {
   currentDiv.innerHTML = 'Trenutno vrijeme:<br>' + currentTimeStr;
   currentDiv.className = 'time-box';
 
-  // Current time + 1h 17m
-  const future = new Date(now.getTime() + (1*60 + 17)*60000);
+  // Detect DST: meter clock doesn't observe DST, so offset changes
+  const jan = new Date(now.getFullYear(), 0, 1);
+  const isDST = now.getTimezoneOffset() < jan.getTimezoneOffset();
+  const meterOffsetMinutes = isDST ? 17 : 77; // 0h17m in summer, 1h17m in winter
+  const offsetLabel = isDST ? '0h17m' : '1h17m';
+
+  const future = new Date(now.getTime() + meterOffsetMinutes * 60000);
   const futureHours = future.getHours();
   const futureMinutes = future.getMinutes();
   const futureTimeStr = pad(futureHours) + ':' + pad(futureMinutes);
@@ -88,13 +93,18 @@ function updateTimes() {
   const futureColor = getColor(futureHours);
 
   const futureDiv = document.getElementById('futureTime');
-  futureDiv.innerHTML = 'Vrijeme na satu: (1h17m):<br>' + futureTimeStr;
+  futureDiv.innerHTML = 'Vrijeme na satu: (' + offsetLabel + '):<br>' + futureTimeStr;
   futureDiv.className = 'time-box ' + futureColor;
 
-  // Historical date (10 years and 1 day ago)
-  const historicalDate = new Date(now);
-  historicalDate.setFullYear(historicalDate.getFullYear() - 10);
-  historicalDate.setDate(historicalDate.getDate() - 1);
+  // Historical date: 10 years ago, adjusted to show the same day of week as today
+  const historicalBase = new Date(now);
+  historicalBase.setFullYear(historicalBase.getFullYear() - 10);
+  const nowDay = now.getDay();
+  const baseDay = historicalBase.getDay();
+  const dayShift = ((nowDay - baseDay) + 7) % 7;
+  const daysToSubtract = (7 - dayShift) % 7;
+  const historicalDate = new Date(historicalBase);
+  historicalDate.setDate(historicalDate.getDate() - daysToSubtract);
 
   const dayNames = ['Nedjelja', 'Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota'];
   const monthNames = ['siječnja', 'veljače', 'ožujka', 'travnja', 'svibnja', 'lipnja',
